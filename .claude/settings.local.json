@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s \"https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-dependencies/4.1.0/spring-boot-dependencies-4.1.0.pom\")",
+      "Bash(mkdir -p /c/work/tools)",
+      "Read(//c/work/**)",
+      "Bash(curl -s -L -o gradle-9.6.1-bin.zip \"https://services.gradle.org/distributions/gradle-9.6.1-bin.zip\")",
+      "Bash(unzip -q -o gradle-9.6.1-bin.zip)",
+      "Read(//c/work/tools/**)",
+      "Bash(curl -s \"https://repo1.maven.org/maven2/tools/jackson/module/jackson-module-kotlin/maven-metadata.xml\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" \"https://repo1.maven.org/maven2/tools/jackson/module/jackson-module-kotlin/3.1.4/jackson-module-kotlin-3.1.4.pom\")",
+      "PowerShell($env:JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jdk-26.0.1\"; & \"C:\\\\work\\\\tools\\\\gradle-9.6.1\\\\bin\\\\gradle.bat\" wrapper --gradle-version 9.6.1 --no-daemon)",
+      "PowerShell($env:JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jdk-26.0.1\"; & \"C:\\\\work\\\\project-spring\\\\gradlew.bat\" build --no-daemon --console=plain 2>&1 | Select-Object -Last 80)",
+      "Bash(cd /tmp)",
+      "Bash(curl -s -o wmt.jar \"https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-webmvc-test/4.1.0/spring-boot-webmvc-test-4.1.0.jar\")",
+      "Bash(unzip -l wmt.jar)",
+      "PowerShell($env:JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jdk-26.0.1\"; & \"C:\\\\work\\\\project-spring\\\\gradlew.bat\" build --console=plain 2>&1 | Select-Object -Last 60)",
+      "PowerShell($env:JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jdk-26.0.1\"; & \"C:\\\\work\\\\project-spring\\\\gradlew.bat\" bootRun --console=plain)",
+      "Bash(curl -s http://localhost:8080/api/books)",
+      "Bash(python -m json.tool)",
+      "PowerShell($conns = Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue; if \\($conns\\) { $conns | Select-Object -ExpandProperty OwningProcess -Unique | ForEach-Object { Write-Output \"Stopping PID $_\"; Stop-Process -Id $_ -Force -ErrorAction SilentlyContinue } } else { Write-Output \"No listener on 8080\" }; Start-Sleep -Seconds 1; if \\(Get-NetTCPConnection -LocalPort 8080 -State Listen -ErrorAction SilentlyContinue\\) { Write-Output \"still up\" } else { Write-Output \"port 8080 free\" })",
+      "PowerShell($env:JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jdk-26.0.1\"; & \"C:\\\\work\\\\project-spring\\\\gradlew.bat\" clean build --console=plain 2>&1 | Select-String -Pattern \"warning:|w: |BUILD|FAILED|Task :test|tests|error:|e: \" | Select-Object -Last 40)",
+      "PowerShell($env:JAVA_HOME=\"C:\\\\Program Files\\\\Java\\\\jdk-26.0.1\"; & \"C:\\\\work\\\\project-spring\\\\gradlew.bat\" compileTestKotlin --rerun-tasks --console=plain 2>&1 | Select-String -Pattern \"w: |warning:|error|BUILD|FAILED\" | Select-Object -First 20)"
+    ]
+  }
+}
