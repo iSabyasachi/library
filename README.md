@@ -79,6 +79,39 @@ src/main
 
 ---
 
+## Java vs Kotlin (same Spring feature)
+
+To compare readability directly, this repo now includes the same "find books by
+author" feature implemented twice:
+
+- Java API: `src/main/java/com/example/library/compare/javaapi/`
+- Kotlin API: `src/main/kotlin/com/example/library/compare/kotlinapi/`
+
+Both endpoints return the same result set:
+
+- `GET /api/compare/java/books?author=Orwell`
+- `GET /api/compare/kotlin/books?author=Orwell`
+
+| Layer | Java example | Kotlin example | What changes most |
+|---|---|---|---|
+| Model | `JavaBook.java` | `KotlinBookApi.kt` (`data class KotlinBook`) | Kotlin removes POJO boilerplate (`equals/hashCode/toString` generation). |
+| Repository | `JavaBookRepository.java` | `KotlinBookRepository` | Similar structure; Kotlin syntax is shorter. |
+| Service | `JavaBookService.java` | `KotlinBookService` | Stream + collectors vs concise `filter { ... }`. |
+| Controller | `JavaBookController.java` | `KotlinBookController` | Both use constructor injection; Kotlin is less verbose. |
+
+Quick manual check:
+
+```bash
+curl "localhost:8080/api/compare/java/books?author=Orwell"
+curl "localhost:8080/api/compare/kotlin/books?author=Orwell"
+```
+
+Automated parity test:
+
+- `src/test/kotlin/com/example/library/compare/JavaVsKotlinBookApiTest.kt`
+
+---
+
 ## Latest Spring Boot 4.1 / Spring 7 features demonstrated
 
 - **Jackson 3** — Boot 4's default JSON engine (group id `tools.jackson`, not the old

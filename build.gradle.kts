@@ -18,6 +18,8 @@ plugins {
     kotlin("plugin.spring") version "2.3.21"
     id("org.springframework.boot") version "4.1.0"
     id("io.spring.dependency-management") version "1.1.7"
+
+    id("org.barfuin.gradle.taskinfo") version "3.0.2"
 }
 
 group = "com.example"
@@ -36,6 +38,8 @@ repositories {
 }
 
 dependencies {
+    implementation("com.google.guava:guava:33.6.0-jre")
+
     // --- Spring MVC (servlet stack) REST + supporting starters ---
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -49,6 +53,9 @@ dependencies {
     implementation("tools.jackson.module:jackson-module-kotlin")
 
     // --- Tests ---
+    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.3")
+    testImplementation("org.junit.platform:junit-platform-launcher:6.0.3")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     // Spring Boot 4 modularised the test slices: @AutoConfigureMockMvc /
     // @WebMvcTest now live here, no longer in spring-boot-starter-test.
@@ -79,4 +86,8 @@ tasks.withType<JavaCompile>().configureEach {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.named<JavaCompile>("compileJava") {
+    options.isDebug = false
 }
