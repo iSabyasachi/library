@@ -1,6 +1,7 @@
 package com.example.library.service;
 
 import com.example.library.domain.Author;
+import com.example.library.model.DataInitializer;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -16,6 +17,14 @@ import java.util.concurrent.ConcurrentMap;
 public class AuthorRepository {
 
     private final ConcurrentMap<Long, Author> authors = new ConcurrentHashMap<>();
+
+    public AuthorRepository() {
+        List<String> orderedAuthors = DataInitializer.AUTHOR_NAMES.stream().sorted().toList();
+        if (orderedAuthors.size() >= 2) {
+            save(new Author(1L, orderedAuthors.get(0), "Seeded author"));
+            save(new Author(2L, orderedAuthors.get(1), null));
+        }
+    }
 
     public Author save(Author author) {
         authors.put(author.id(), author);

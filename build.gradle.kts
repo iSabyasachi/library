@@ -38,7 +38,7 @@ repositories {
 }
 
 dependencies {
-    implementation("com.google.guava:guava:33.6.0-jre")
+    implementation(project(":model"))
 
     // --- Spring MVC (servlet stack) REST + supporting starters ---
     implementation("org.springframework.boot:spring-boot-starter-web")

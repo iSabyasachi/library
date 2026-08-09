@@ -1,5 +1,6 @@
 package com.example.library.compare.kotlinapi
 
+import com.example.library.model.DataInitializer
 import org.springframework.stereotype.Repository
 import org.springframework.stereotype.Service
 import org.springframework.web.bind.annotation.GetMapping
@@ -15,10 +16,13 @@ data class KotlinBook(
 
 @Repository
 class KotlinBookRepository {
+    private val authorNames = DataInitializer.AUTHOR_NAMES.sorted()
+    private val bookNames = DataInitializer.BOOK_NAMES.sorted()
+
     private val books = listOf(
-        KotlinBook(1, "1984", "Orwell"),
-        KotlinBook(2, "Animal Farm", "Orwell"),
-        KotlinBook(3, "Dune", "Herbert"),
+        KotlinBook(1, bookNames[0], authorNames[0]),
+        KotlinBook(2, bookNames[2], authorNames[0]),
+        KotlinBook(3, bookNames[1], authorNames[1]),
     )
 
     fun findAll(): List<KotlinBook> = books

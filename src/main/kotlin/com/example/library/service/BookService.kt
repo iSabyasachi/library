@@ -2,6 +2,7 @@ package com.example.library.service
 
 import com.example.library.domain.Book
 import com.example.library.dto.NewBookRequest
+import com.example.library.model.DataInitializer
 import org.springframework.stereotype.Service
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.atomic.AtomicLong
@@ -23,6 +24,15 @@ class BookService(
 ) {
     private val books = ConcurrentHashMap<Long, Book>()
     private val ids = AtomicLong(0)
+
+    init {
+        val orderedTitles = DataInitializer.BOOK_NAMES.sorted()
+        if (orderedTitles.size >= 3) {
+            create(NewBookRequest(orderedTitles[0], 1, 1968, listOf("fantasy", "classic")))
+            create(NewBookRequest(orderedTitles[2], 1, 1969, listOf("sci-fi")))
+            create(NewBookRequest(orderedTitles[1], 2, 1993))
+        }
+    }
 
     fun create(request: NewBookRequest): Book {
         // Kotlin fluently handling a Java Optional returned across the boundary.

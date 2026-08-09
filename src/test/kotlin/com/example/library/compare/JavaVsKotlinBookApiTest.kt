@@ -1,5 +1,6 @@
 package com.example.library.compare
 
+import com.example.library.model.DataInitializer
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
@@ -14,21 +15,25 @@ class JavaVsKotlinBookApiTest(
 ) {
 
     @Test
-    fun `java and kotlin endpoints return same titles for Orwell`() {
+    fun `java and kotlin endpoints return same titles from model seed`() {
+        val author = DataInitializer.AUTHOR_NAMES.sorted()[0]
+        val expectedFirstTitle = DataInitializer.BOOK_NAMES.sorted()[0]
+        val expectedSecondTitle = DataInitializer.BOOK_NAMES.sorted()[2]
+
         mockMvc.get("/api/compare/java/books") {
-            param("author", "Orwell")
+            param("author", author)
         }.andExpect {
             status { isOk() }
-            jsonPath("$[0].title") { value("1984") }
-            jsonPath("$[1].title") { value("Animal Farm") }
+            jsonPath("$[0].title") { value(expectedFirstTitle) }
+            jsonPath("$[1].title") { value(expectedSecondTitle) }
         }
 
         mockMvc.get("/api/compare/kotlin/books") {
-            param("author", "Orwell")
+            param("author", author)
         }.andExpect {
             status { isOk() }
-            jsonPath("$[0].title") { value("1984") }
-            jsonPath("$[1].title") { value("Animal Farm") }
+            jsonPath("$[0].title") { value(expectedFirstTitle) }
+            jsonPath("$[1].title") { value(expectedSecondTitle) }
         }
     }
 }
