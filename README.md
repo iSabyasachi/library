@@ -32,6 +32,16 @@ $env:JAVA_HOME = "C:\Program Files\Java\jdk-26.0.1"
 # macOS / Linux
 ./gradlew build
 ./gradlew bootRun
+
+tree .
+./gradlew
+./gradlew help
+./gradlew tiTree assemble
+./gradlew dep
+./gradlew projectHealth
+./gradlew compileJava --build-cache
+./gradlew compileJava -I
+./gradlew compileJava "-Dorg.gradle.caching.debug=true"
 ```
 
 ---
