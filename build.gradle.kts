@@ -12,14 +12,19 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 // ---------------------------------------------------------------------------
 
 plugins {
-    kotlin("jvm") version "2.3.21"
+    //kotlin("jvm") version "2.3.21"
     // Makes Spring-annotated Kotlin classes `open` automatically (Spring needs
     // to subclass them for proxies; Kotlin classes are `final` by default).
-    kotlin("plugin.spring") version "2.3.21"
-    id("org.springframework.boot") version "4.1.0"
-    id("io.spring.dependency-management") version "1.1.7"
+    //kotlin("plugin.spring") version "2.3.21"
+    //id("org.springframework.boot") version "4.1.0"
+    //id("io.spring.dependency-management") version "1.1.7"
+    alias(libs.plugins.kotlin.jvm)
+    alias(libs.plugins.kotlin.spring)
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependency.management)
 
     id("org.barfuin.gradle.taskinfo") version "3.0.2"
+    id("com.autonomousapps.dependency-analysis") version "3.18.0"
 }
 
 group = "com.example"
@@ -33,12 +38,25 @@ java {
     }
 }
 
+kotlin {
+    compilerOptions {
+        // Kotlin 2.3 does not yet emit JVM 26 bytecode; target a level both
+        // compilers agree on. The code still RUNS on the JDK 26 toolchain.
+        jvmTarget = JvmTarget.JVM_24
+        // Honour JSR-305 / JSpecify nullability annotations on Java APIs as
+        // strict Kotlin nullability — improves Java->Kotlin null safety.
+        freeCompilerArgs.addAll("-Xjsr305=strict")
+    }
+}
+
 repositories {
     mavenCentral()
 }
 
 dependencies {
     implementation(project(":model"))
+    //implementation("com.google.inject:guice:7.0.0")
+    implementation(libs.guice)
 
     // --- Spring MVC (servlet stack) REST + supporting starters ---
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -50,11 +68,16 @@ dependencies {
     // Spring Boot 4 uses Jackson 3 (group id `tools.jackson`, not the old
     // `com.fasterxml.jackson`). This is the Jackson-3 Kotlin module that
     // teaches Jackson how to (de)serialize Kotlin data classes.
-    implementation("tools.jackson.module:jackson-module-kotlin")
+    runtimeOnly("tools.jackson.module:jackson-module-kotlin:3.1.4")
 
     // --- Tests ---
-    testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.3")
-    testImplementation("org.junit.platform:junit-platform-launcher:6.0.3")
+    //testImplementation("org.junit.jupiter:junit-jupiter-api:6.0.3")
+    testImplementation(libs.junit.jupiter)
+    //testImplementation(libs.mockito.junit.jupitor)
+    //testImplementation(libs.mockito.core)
+    testImplementation(libs.bundles.mockito)
+
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:6.0.3")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     // Spring Boot 4 modularised the test slices: @AutoConfigureMockMvc /
@@ -62,17 +85,6 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-webmvc-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-}
-
-kotlin {
-    compilerOptions {
-        // Kotlin 2.3 does not yet emit JVM 26 bytecode; target a level both
-        // compilers agree on. The code still RUNS on the JDK 26 toolchain.
-        jvmTarget = JvmTarget.JVM_24
-        // Honour JSR-305 / JSpecify nullability annotations on Java APIs as
-        // strict Kotlin nullability — improves Java->Kotlin null safety.
-        freeCompilerArgs.addAll("-Xjsr305=strict")
-    }
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -89,5 +101,5 @@ tasks.withType<Test> {
 }
 
 tasks.named<JavaCompile>("compileJava") {
-    options.isDebug = false
+    options.isDebug = true
 }

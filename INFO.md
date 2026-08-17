@@ -1,3 +1,5 @@
+https://github.com/gradle
+
 Question:
 Does Kotlin use Java libraries through the JVM? How does it work internally?
 
@@ -218,3 +220,47 @@ When you see each:
 Both are good — they mean your build is fast! ⚡
 
 Build cache requires explicit configuration (usually in a CI environment or via `gradle.properties`). By default, Gradle uses local `UP-TO-DATE` checks, which is sufficient for most development workflows.
+
+---
+
+Question:
+What does this mean in Gradle dependency output?
+
+```
+com.google.inject:guice:7.0.0
+|    +--- jakarta.inject:jakarta.inject-api:2.0.1
+|    +--- aopalliance:aopalliance:1.0
+|    \--- com.google.guava:guava:31.0.1-jre -> 33.6.0-jre (*)
+```
+
+Answer:
+This is Gradle's dependency resolution output showing automatic version conflict resolution.
+
+Breaking down `com.google.guava:guava:31.0.1-jre -> 33.6.0-jre (*)`:
+
+| Part | Meaning |
+|---|---|
+| `com.google.guava:guava:31.0.1-jre` | Guice requested this version of Guava |
+| `->` | Gradle resolved it to a **different** version instead |
+| `33.6.0-jre` | The version actually used at runtime |
+| `(*)` | Already listed elsewhere in the tree — subtree omitted to avoid repetition |
+
+Why the upgrade happened:
+
+Gradle uses **"newest wins"** conflict resolution by default. When multiple dependencies request the same library at different versions, Gradle picks the highest version across all requests.
+
+In this project:
+- `com.google.inject:guice:7.0.0` depends on `guava:31.0.1-jre`
+- The `:model` module declares `api("com.google.guava:guava:33.6.0-jre")`
+- Gradle sees both, picks `33.6.0-jre`, and upgrades Guice's transitive dependency automatically
+
+Visual summary:
+
+```text
+:model module         → guava 33.6.0-jre  ──────────────────────────┐
+                                                                     │
+guice 7.0.0           → guava 31.0.1-jre  ──→ resolved to 33.6.0-jre ┘
+                                (upgraded automatically by Gradle)
+```
+
+Nothing is broken — both modules end up sharing one copy of `guava:33.6.0-jre` on the classpath. This is normal and expected behavior.

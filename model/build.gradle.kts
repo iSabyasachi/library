@@ -17,10 +17,16 @@ repositories {
 
 dependencies {
     // Exposed to consumers so they can compile against ImmutableSet in this module's API.
-    api("com.google.guava:guava:33.6.0-jre")
+    //api("com.google.guava:guava:33.6.0-jre")
+    api(libs.guava)
 }
 
 tasks.withType<JavaCompile>().configureEach {
     options.release = 24
 }
+
+tasks.named<JavaCompile>("compileJava") {
+    options.isDebug = true
+}
+
 
